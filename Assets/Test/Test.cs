@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Text;
 using UnityEngine;
@@ -26,15 +27,16 @@ public class Test : MonoBehaviour
             Debug.Log($"{point.Item1} : {point.Item2}");
         }
         //_points = ExtractData2(sr).ToList();
-        using (FileStream fstream = new FileStream($"{Application.persistentDataPath}/2.txt", FileMode.OpenOrCreate))
+        string[] lines = new string[30];
+
+        for (int i = 0; i < 30; i++)
         {
-            
-            // преобразуем строку в байты
-           // byte[] buffer = Encoding.Default.GetBytes(text);
-            // запись массива байтов в файл
-            //await fstream.WriteAsync(buffer, 0, buffer.Length);
-            Console.WriteLine("Текст записан в файл");
+            lines[i] = $"{_points[i].Item1} {_points[i].Item2}";
         }
+
+        // WriteAllLines creates a file, writes a collection of strings to the file,
+        // and then closes the file.
+        System.IO.File.WriteAllLines($"{Application.persistentDataPath}/3.txt", lines);
         //Debug.Log(stAirs(nums, 100));
     }
 
