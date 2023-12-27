@@ -11,7 +11,7 @@ public class Graph : MonoBehaviour
     [SerializeField] private GameObject _xDivision;
     [SerializeField] private float _amountXDivision;
     [SerializeField] private GameObject _yDivision;
-    
+
     [SerializeField] private float _amountYDivision;
     [SerializeField] private GameObject _point;
     private List<GameObject> _points;
@@ -27,10 +27,10 @@ public class Graph : MonoBehaviour
         _pointsPos = new();
         ExtractData2(sr);
         _tops = new(_pointsPos.Count);
-        
+
         Sort(_pointsPos);
-        
-        Solve(_pointsPos);
+
+        Debug.Log(Solve(_pointsPos));
         //WriteDataIntoFile(_pointsPos);
         // tilt = 286 
         //(-999982804, 931735985)
@@ -48,7 +48,7 @@ public class Graph : MonoBehaviour
         //LocatePoints(_pointsPos);
     }
 
-    private bool Solve(List<(int, int)> points) 
+    private bool Solve(List<(int, int)> points)
     {
         // опущу часть для нечетного кол-ва точек для простоты, потому что у нас графики по 30 и 200000 точек
         List<(int, int)> leftPoints = new();
@@ -65,20 +65,7 @@ public class Graph : MonoBehaviour
         // и отнимать у всех точек половину этого сдвига
         // сравнивать все точки, если Х совпал, то проверять Y, если Х или Y не совпал, то функция не четная
 
-        foreach (var point in points) 
-        {
-            if (point.Item1 < 0) //если икс отрицательный, то добавляем точку в левый список
-            {
-                leftPoints.Add(point);
-            }
-            else //if(point.Item1 > 0)// иначе в правый
-            {
-                rightPoints.Add(point);
-            }
-        }
 
-        leftPoints.Sort();
-        rightPoints.Sort();
 
         // определяем сдвиг (мы уже знаем, что у второго графика сдвиг = 143)
 
@@ -95,35 +82,72 @@ public class Graph : MonoBehaviour
 
         if (pointCount % 2 == 0)
         {
-            leftPoint = points[pointCount / 2];
-            rightPoint = points[(pointCount / 2) + 1];
-
-            if ((leftPoint.Item1 > 0 && rightPoint.Item1 > 0) || (leftPoint.Item1 < 0 && rightPoint.Item1 < 0))
+            Debug.Log("even");
+            leftPoint = points[(pointCount / 2) - 1];
+            rightPoint = points[(pointCount / 2)];
+            Debug.Log(leftPoint);
+            Debug.Log(rightPoint);
+            if ((leftPoint.Item1 > 0 && rightPoint.Item1 > 0))
             {
-                int max = Math.Max(Math.Abs(leftPoint.Item1), Math.Abs(rightPoint.Item1));
-                shift = max;
+                Debug.Log("if");
+                //int max = Math.Max(Math.Abs(leftPoint.Item1), Math.Abs(rightPoint.Item1));
+                int betweenPoints = rightPoint.Item1 - leftPoint.Item1;
+                shift = (betweenPoints / 2) + leftPoint.Item1;// при точках 1 и 5 я получу 3
+                shift *= -1;
             }
-            else 
+            else if ((leftPoint.Item1 < 0 && rightPoint.Item1 < 0))
             {
-                int diff = Math.Abs(leftPoint.Item1) - Math.Abs(rightPoint.Item1);
-                shift = Math.Abs(diff) / 2;
+                Debug.Log("else if");
+                int betweenPoints = leftPoint.Item1 - rightPoint.Item1;
+                shift = (betweenPoints / 2) - leftPoint.Item1;// при точках -5 и -1 я получу -3
+                //shift *= -1;
+            }
+            else
+            {
+                Debug.Log("else");
+                int betweenPoints = (rightPoint.Item1 - leftPoint.Item1) / 2;
+                // при точках -5 и 1 я получу 3
+                if (Math.Abs(leftPoint.Item1) > Math.Abs(rightPoint.Item1))
+                {//перевес вправо
+                    Debug.Log("if in else");
+                    shift = Math.Abs(leftPoint.Item1 + betweenPoints);// shift = 2
+                }
+                else
+                {
+                    Debug.Log("else in else");
+                    shift = -(rightPoint.Item1 - betweenPoints);// shift = 2
+                }
             }
         }
-        else 
+        else
         {
-            shift = points[(pointCount / 2) + 1].Item1;
+            Debug.Log("odd");
+            shift = -points[pointCount / 2].Item1;
         }
 
-        for (int i = 0; i < leftPoints.Count; i++)
+        List<(int, int)> tempPoints = new(points.Count);
+
+        foreach (var point in points)
         {
-            leftPoints[i] = (leftPoints[i].Item1 - (int)shift, leftPoints[i].Item2);
+            tempPoints.Add((point.Item1 + (int)shift, point.Item2));
         }
 
-        for (int i = 0; i < rightPoints.Count; i++)
+        foreach (var point in tempPoints)
         {
-            rightPoints[i] = (rightPoints[i].Item1 - (int)shift, rightPoints[i].Item2);
+            if (point.Item1 < 0) //если икс отрицательный, то добавляем точку в левый список
+            {
+                leftPoints.Add(point);
+            }
+            else //if(point.Item1 > 0)// иначе в правый
+            {
+                rightPoints.Add(point);
+            }
         }
 
+        leftPoints.Sort();
+        rightPoints.Sort();
+
+        Debug.Log("shift "+ shift);
         Debug.Log("Left");
         foreach (var p in leftPoints)
         {
@@ -135,10 +159,58 @@ public class Graph : MonoBehaviour
         {
             Debug.Log(p);
         }
+        rightPoints.Reverse();
+        if (rightPoints[0].Item1 == 0) rightPoints.RemoveAt(0);
 
-        // step 1 проверить есть ли одинаковые иксы, например -1 и 1, -43 и 43 и тд, если нет, то return false
+        //if (leftPoints.Count == rightPoints.Count)
+        //{
+            for (int i = 0; i < leftPoints.Count; i++)
+            {
+                //int tempDiff = (leftPoints.Count - i - 1);
 
-        // step 2 сравнить для каждой пары иксов их игреки, они должны быть равны, если нет, то return false
+                Debug.Log($"x {leftPoints[i].Item1} {rightPoints[i].Item1}");
+                if (Math.Abs(leftPoints[i].Item1) != Math.Abs(rightPoints[i].Item1))
+                {// step 1 проверить есть ли одинаковые иксы, например -1 и 1, -43 и 43 и тд, если нет, то return false
+                    Debug.Log("x !=");
+                    return false;
+                }
+                else
+                {
+                    Debug.Log($"y {leftPoints[i].Item2} {rightPoints[i].Item2}");
+                    if (leftPoints[i].Item2 != rightPoints[i].Item2)
+                    {// step 2 сравнить для каждой пары иксов их игреки, они должны быть равны, если нет, то return false
+                        Debug.Log("y !=");
+                        return false;
+                    }
+                }
+            }
+        //}
+        //else 
+        //{
+        //    for (int i = 0; i < leftPoints.Count; i++)
+        //    {
+        //        int tempDiff = (leftPoints.Count - i);
+
+        //        Debug.Log($"x {leftPoints[i].Item1} {rightPoints[tempDiff].Item1}");
+        //        if (Math.Abs(leftPoints[i].Item1) != Math.Abs(rightPoints[tempDiff].Item1))
+        //        {// step 1 проверить есть ли одинаковые иксы, например -1 и 1, -43 и 43 и тд, если нет, то return false
+        //            Debug.Log("x !=");
+        //            return false;
+        //        }
+        //        else
+        //        {
+        //            Debug.Log($"y {leftPoints[i].Item2} {rightPoints[tempDiff].Item2}");
+        //            if (leftPoints[i].Item2 != rightPoints[tempDiff].Item2)
+        //            {// step 2 сравнить для каждой пары иксов их игреки, они должны быть равны, если нет, то return false
+        //                Debug.Log("y !=");
+        //                return false;
+        //            }
+        //        }
+        //    }
+
+        //}
+
+
 
         return true;
     }
@@ -179,11 +251,11 @@ public class Graph : MonoBehaviour
         }
         for (int i = 0; i < _amountYDivision; i++)
         {
-            Instantiate(_yDivision, new Vector3( 0, i * _scale, 0), Quaternion.identity);
+            Instantiate(_yDivision, new Vector3(0, i * _scale, 0), Quaternion.identity);
         }
     }
 
-    public void SpawnPoints(List<(int,int)> coordinates) 
+    public void SpawnPoints(List<(int, int)> coordinates)
     {
         _points = new(coordinates.Count);
 
@@ -193,7 +265,7 @@ public class Graph : MonoBehaviour
         }
     }
 
-    public void LocatePoints(List<(int, int)> coordinates) 
+    public void LocatePoints(List<(int, int)> coordinates)
     {
         foreach (var c in coordinates)
         {
@@ -206,7 +278,7 @@ public class Graph : MonoBehaviour
         {
             _points[i].transform.position = _tops[i];
         }
-        _lineRenderer.positionCount= _tops.Count;
+        _lineRenderer.positionCount = _tops.Count;
         _lineRenderer.SetPositions(_tops.ToArray());
     }
 }
