@@ -1,15 +1,15 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Energy : BasePetParameter
+public class Hunger : BasePetParameter
 {
     private float currentVelocity;
     private Slider _slider;
-    public Energy(int maxValue, int decreaseValuePerSecond, Slider slider) : base(maxValue, decreaseValuePerSecond)
+    public Hunger(int maxValue, int decreaseValuePerSecond, Slider slider) : base(maxValue, decreaseValuePerSecond)
     {
         _slider = slider;
         _slider.value = CurrentValue / MaxValue;
-        Debug.Log($"Energy = {CurrentValue}");
+        Debug.Log($"Hunger = {CurrentValue}");
     }
 
     public override void Tick()
@@ -22,13 +22,13 @@ public class Energy : BasePetParameter
 
     }
 
-    public override void UpdateGraphic() 
+    public override void UpdateGraphic()
     {
         if (CurrentValue == 0) return;
 
         float temp = Mathf.SmoothDamp(_slider.value, (CurrentValue * 1f / MaxValue * 1f), ref currentVelocity, 1000 * Time.deltaTime);
-       // float temp = (CurrentValue * 1f / MaxValue * 1f);
+        // float temp = (CurrentValue * 1f / MaxValue * 1f);
         _slider.value = temp;
-        Debug.Log($"Energy = {CurrentValue} {temp}");
+        Debug.Log($"Hunger = {CurrentValue} {temp}");
     }
 }

@@ -11,5 +11,6 @@ public class ClickHandler : MonoBehaviour, IClickHandler
         ClickEvent?.Invoke(amount);// fire click event
 
         // play animation
+
     }
 }

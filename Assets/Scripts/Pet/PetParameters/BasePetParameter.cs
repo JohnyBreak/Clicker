@@ -12,4 +12,5 @@ public abstract class BasePetParameter
     }
 
     public abstract void Tick();
+    public abstract void UpdateGraphic();
 }
