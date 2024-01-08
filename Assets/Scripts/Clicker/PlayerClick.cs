@@ -1,11 +1,21 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Zenject;
 
 public class PlayerClick : MonoBehaviour
 {
     [SerializeField] private Button _button;
     [SerializeField] private ClickHandler _clickObject;
-    
+
+
+    private Status _status;
+
+    [Inject]
+    private void Construct(Status status) 
+    {
+        _status = status;
+    }
+
     private void Awake()
     {
         _button.onClick.AddListener(OnClick);
@@ -18,6 +28,6 @@ public class PlayerClick : MonoBehaviour
 
     private void OnClick()
     {
-        _clickObject.Click();
+        _clickObject.Click(_status.PlayerClickAmount);
     }
 }

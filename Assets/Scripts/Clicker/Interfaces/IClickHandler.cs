@@ -2,7 +2,7 @@ using System;
 
 public interface IClickHandler
 {
-    public event Action<int> ClickEvent;
+    public event Action<double> ClickEvent;
 
-    public void Click(int amount);
+    public void Click(double amount);
 }

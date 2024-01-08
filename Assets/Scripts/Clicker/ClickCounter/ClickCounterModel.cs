@@ -1,13 +1,13 @@
 
 public class ClickCounterModel
 {
-    public int Amount;
+    public double Amount;
 
     public ClickCounterModel()
     {
     }
 
-    public ClickCounterModel(int amount) 
+    public ClickCounterModel(double amount) 
     {
         Amount = amount;
     }

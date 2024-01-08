@@ -1,62 +1,44 @@
 using Newtonsoft.Json;
-using System.Collections.Generic;
 
 public class PlayerData
 {
-    //private string _selectedSkinID;
+    private int _playerClickAmount;
 
-    //private List<string> _openItemIDs;
-
-    private int _clickAmount;
-
-    public int ClickAmount
+    public int PlayerClickAmount
     {
-        get => _clickAmount;
+        get => _playerClickAmount;
         set
         {
             if (value < 0) throw new System.ArgumentOutOfRangeException(nameof(value));
 
-            _clickAmount = value;
+            _playerClickAmount = value;
         }
     }
 
-    //public string SelectedSkinID
-    //{
-    //    get => _selectedSkinID;
-    //    set
-    //    {
-    //        if (_openItemIDs.Contains(value) == false)
-    //            throw new System.ArgumentException(nameof(value));
+    private double _clickScore;
 
-    //        _selectedSkinID = value;
-    //    }
-    //}
+    public double ClickScore
+    {
+        get => _clickScore;
+        set
+        {
+            if (value < 0) throw new System.ArgumentOutOfRangeException(nameof(value));
+
+            _clickScore = value;
+        }
+    }
+
 
     public PlayerData()
     {
-        //_openItemIDs = new List<string>();
+        _playerClickAmount = 1;
+        _clickScore = 0;
     }
 
     [JsonConstructor]
-    public PlayerData(int tickets, string selectedSkinID, List<string> openedItemID)
+    public PlayerData(int score, int playerClickAmount)
     {
-        _clickAmount = tickets;
-        //_selectedSkinID = selectedSkinID;
-        //_openItemIDs = openedItemID ?? new List<string>();
+        _clickScore = score;
+        _playerClickAmount = playerClickAmount;
     }
-
-    //public IEnumerable<string> OpenItemIDs => _openItemIDs;
-
-    //public void OpenItem(string asset)
-    //{
-    //    if (_openItemIDs.Contains(asset))
-    //        throw new System.ArgumentException(nameof(asset));
-
-    //    _openItemIDs.Add(asset);
-    //}
-
-    //public bool ItemIsOpen(string id)
-    //{
-    //    return _openItemIDs.Contains(id);
-    //}
 }

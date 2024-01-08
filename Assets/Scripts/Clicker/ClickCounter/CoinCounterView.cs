@@ -1,7 +1,7 @@
 using TMPro;
 using UnityEngine;
 
-public class ClickCounterView : MonoBehaviour
+public class CoinCounterView : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI _counterText;
 
